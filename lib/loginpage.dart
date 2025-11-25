@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -214,6 +215,7 @@ class _LoginPageState extends State<LoginPage> {
         .then((response) {
       if (response.statusCode == 200) {
         var res = jsonDecode(response.body);
+        log(response.body);
 
         if (res["status"] == "success") {
           user = User.fromJson(res["data"][0]);
