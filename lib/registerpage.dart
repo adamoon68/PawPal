@@ -30,7 +30,17 @@ class _RegisterPageState extends State<RegisterPage> {
     if (width > 400) width = 400;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Register Page")),
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const LoginPage()),
+            );
+          },
+        ),
+        title: const Text("Register Page")),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
