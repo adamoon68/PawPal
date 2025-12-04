@@ -160,7 +160,7 @@ class _SubmitPetPageState extends State<SubmitPetPage> {
 
   @override
   Widget build(BuildContext context) {
-    // follow your original UI style
+  
     return Scaffold(
       appBar: AppBar(title: const Text('Submit Pet')),
       body: Center(
