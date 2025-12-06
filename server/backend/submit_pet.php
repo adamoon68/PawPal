@@ -1,77 +1,99 @@
 <?php
+
+error_reporting(0); 
+
 header("Access-Control-Allow-Origin: *");
-header('Content-Type: application/json');
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: POST");
 
 include 'config.php';
 
-// read raw JSON body
-$body = file_get_contents('php://input');
-if (!$body) {
-    echo json_encode(['success' => false, 'message' => 'No input received']);
-    exit();
+
+if (!isset($_POST['user_id']) || !isset($_POST['pet_name'])) {
+    $response = array('status' => 'failed', 'message' => 'No data received');
+    sendJsonResponse($response);
+    die();
 }
 
-$data = json_decode($body, true);
-if (!$data) {
-    echo json_encode(['success' => false, 'message' => 'Invalid JSON']);
-    exit();
-}
 
-// required fields
-$user_id = $data['user_id'] ?? '';
-$pet_name = $data['pet_name'] ?? '';
-$pet_type = $data['pet_type'] ?? '';
-$category = $data['category'] ?? '';
-$description = $data['description'] ?? '';
-$lat = $data['lat'] ?? '';
-$lng = $data['lng'] ?? '';
-$images = $data['images'] ?? [];
+$user_id = $_POST['user_id'];
+$pet_name = $_POST['pet_name'];
+$pet_type = $_POST['pet_type'];
+$category = $_POST['category'];
+$description = $_POST['description'];
+$lat = $_POST['lat'];
+$lng = $_POST['lng'];
 
-if ($user_id == '' || $pet_name == '' || $pet_type == '' || $category == '' || $description == '' || $lat == '' || $lng == '' || !is_array($images) || count($images) < 1) {
-    echo json_encode(['success' => false, 'message' => 'Missing required fields or images']);
-    exit();
-}
+
+$imagesJSON = $_POST['images']; 
+$imageArray = json_decode($imagesJSON, true);
 
 $uploadedPaths = [];
-$uploadDir = __DIR__ . '/uploads/pets/';
+
+
+$uploadDir = __DIR__ . '/uploads/pets/'; 
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0777, true);
 }
 
-foreach ($images as $imgBase64) {
-    // generate a filename
-    $filename = uniqid('pet_') . '.png';
-    $filepath = $uploadDir . $filename;
+if (is_array($imageArray)) {
+    foreach ($imageArray as $base64String) {
+       
+        $filename = "pet_" . uniqid() . ".jpg";
+        $filepath = $uploadDir . $filename;
 
-    // if image includes data URI header, remove it
-    if (strpos($imgBase64, 'base64,') !== false) {
-        $parts = explode('base64,', $imgBase64);
-        $imgBase64 = $parts[1];
+        
+        $decodedImage = base64_decode($base64String);
+
+       
+        if ($decodedImage !== false) {
+            if (file_put_contents($filepath, $decodedImage)) {
+                $uploadedPaths[] = $filename;
+            }
+        }
     }
-
-    $decoded = base64_decode($imgBase64);
-    if ($decoded === false) continue;
-
-    // save using file_put_contents
-    $saved = file_put_contents($filepath, $decoded);
-    if ($saved !== false) {
-        $uploadedPaths[] = $filename;
-    }
-}
-
-// store in DB: image_paths as JSON string
-$imagesJson = json_encode($uploadedPaths);
-
-// prepare insert
-$stmt = $conn->prepare("INSERT INTO tbl_pets (user_id, pet_name, pet_type, category, description, image_paths, lat, lng, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-$stmt->bind_param("isssssss", $user_id, $pet_name, $pet_type, $category, $description, $imagesJson, $lat, $lng);
-
-if ($stmt->execute()) {
-    echo json_encode(['success' => true, 'message' => 'Pet submitted successfully']);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Failed to insert into DB']);
+    $response = array('status' => 'failed', 'message' => 'Invalid image format');
+    sendJsonResponse($response);
+    die();
 }
 
-$stmt->close();
+
+if (count($uploadedPaths) == 0) {
+    $response = array('status' => 'failed', 'message' => 'Failed to upload images');
+    sendJsonResponse($response);
+    die();
+}
+
+
+$finalImagePaths = json_encode($uploadedPaths);
+
+
+$sql = "INSERT INTO tbl_pets (user_id, pet_name, pet_type, category, description, image_paths, lat, lng, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+$stmt = $conn->prepare($sql);
+
+if ($stmt) {
+
+    $stmt->bind_param("isssssss", $user_id, $pet_name, $pet_type, $category, $description, $finalImagePaths, $lat, $lng);
+    
+    if ($stmt->execute()) {
+        $response = array('status' => 'success', 'data' => null);
+        sendJsonResponse($response);
+    } else {
+        $response = array('status' => 'failed', 'message' => 'Database Insertion Failed: ' . $stmt->error);
+        sendJsonResponse($response);
+    }
+    $stmt->close();
+} else {
+    $response = array('status' => 'failed', 'message' => 'Statement Preparation Failed: ' . $conn->error);
+    sendJsonResponse($response);
+}
+
 $conn->close();
+
+// Helper function to send JSON
+function sendJsonResponse($sentArray)
+{
+    echo json_encode($sentArray);
+}
 ?>

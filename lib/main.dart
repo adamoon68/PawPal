@@ -16,7 +16,7 @@ class MainApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.blueGrey,
+          backgroundColor: Color(0xFF607D8B),
           foregroundColor: Colors.white,
         ),
       ),
