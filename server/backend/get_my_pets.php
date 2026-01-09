@@ -33,7 +33,7 @@ if ($operation == 'delete') {
 
 } else {
 
-    // FETCH LOGIC (Default)
+    // FETCH LOGIC 
 
     $user_id = $_POST['user_id'] ?? '';
     
@@ -42,14 +42,14 @@ if ($operation == 'delete') {
         exit();
     }
 
-    $stmt = $conn->prepare("SELECT pet_id, user_id, pet_name, pet_age, pet_gender, pet_type, category, pet_health, description, image_paths, lat, lng, created_at FROM tbl_pets WHERE user_id = ? ORDER BY created_at DESC");
+    $stmt = $conn->prepare("SELECT pet_id, user_id, pet_name, pet_type, category, description, image_paths, lat, lng, created_at FROM tbl_pets WHERE user_id = ? ORDER BY created_at DESC");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $res = $stmt->get_result();
 
     $data = [];
     while ($row = $res->fetch_assoc()) {
-        // Decode the JSON string from DB into a PHP array
+        
         $ips = [];
         if (!empty($row['image_paths'])) {
             $tmp = json_decode($row['image_paths'], true);

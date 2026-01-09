@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pawpal/user.dart';
-import 'package:pawpal/loginpage.dart';
-import 'package:pawpal/submitpetpage.dart';
-import 'package:pawpal/mypetspage.dart';
 import 'package:pawpal/mydrawer.dart';
+import 'package:pawpal/publicpetspage.dart';
 
 class HomePage extends StatelessWidget {
   final User user;
@@ -14,65 +12,100 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("PawPal Home"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const LoginPage()),
-            );
-          },
-        ),
+        
       ),
-
-      // ADD DRAWER
       drawer: MyDrawer(user: user),
-
-      body: Center(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "Welcome, ${user.userName}!",
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            // Welcome Section
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  const Icon(Icons.pets, size: 60, color: Colors.brown),
+                  const SizedBox(height: 10),
+                  Text(
+                    "Welcome back,\n${user.userName}!",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.brown,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  const Text(
+                    "Ready to find a new paw friend?",
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(height: 30),
 
-            const SizedBox(height: 25),
-
-            // BUTTON: SUBMIT PET
-            ElevatedButton.icon(
-              onPressed: () {
+            // MAIN ACTION: ADOPT / BROWSE
+            GestureDetector(
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => SubmitPetPage(user: user),
+                    builder: (_) => PublicPetsPage(user: user),
                   ),
                 );
               },
-              icon: const Icon(Icons.pets),
-              label: const Text("Submit a Pet"),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              child: Container(
+                height: 150,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.orangeAccent,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.orange.withOpacity(0.4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.search, size: 50, color: Colors.white),
+                    SizedBox(width: 20),
+                    Text(
+                      "Find a Pet",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-
-            const SizedBox(height: 15),
-
-            // BUTTON: VIEW MY PETS
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => MyPetsPage(user: user),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.list),
-              label: const Text("My Pets"),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              ),
+            
+            const SizedBox(height: 20),
+            
+            // Informational Text or Footer
+            const Text(
+              "Visit the menu to manage your\nsubmissions and profile.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey),
             ),
           ],
         ),

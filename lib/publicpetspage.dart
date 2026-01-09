@@ -28,7 +28,7 @@ class _PublicPetsPageState extends State<PublicPetsPage> {
 
   Future<void> loadPets() async {
     String url =
-        "${MyConfig.baseUrl}${MyConfig.backend}/load_all_pets.php?search=$search&type=$selectedType";
+        "${MyConfig.baseUrl}${MyConfig.backend}/get_all_pets.php?search=$search&type=$selectedType";
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
@@ -45,7 +45,7 @@ class _PublicPetsPageState extends State<PublicPetsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Adopt a Pet")),
+      appBar: AppBar(title: const Text("Browse Pets")),
       body: Column(
         children: [
           Padding(

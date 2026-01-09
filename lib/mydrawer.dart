@@ -32,7 +32,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.search),
-            title: const Text('Adopt / Donate'),
+            title: const Text('Browse Pets'),
             onTap: () {
               Navigator.pop(context);
               if (user != null) {

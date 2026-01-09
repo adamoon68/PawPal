@@ -18,6 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
   late TextEditingController nameCtrl;
   late TextEditingController phoneCtrl;
   File? _image;
+  bool _isLoading = false; // Added to show loading state
 
   @override
   void initState() {
@@ -37,36 +38,74 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _updateProfile() async {
-    String base64Image = _image != null
-        ? base64Encode(_image!.readAsBytesSync())
-        : "";
-    var resp = await http.post(
-      Uri.parse("${MyConfig.baseUrl}${MyConfig.backend}/update_profile.php"),
-      body: {
-        "user_id": widget.user.userId,
-        "name": nameCtrl.text,
-        "phone": phoneCtrl.text,
-        "image": base64Image,
-      },
-    );
-
-    if (jsonDecode(resp.body)['status'] == 'success') {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Profile Updated")));
-      // Optionally update the local User object here or require re-login
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Update Failed")));
+    if (nameCtrl.text.isEmpty || phoneCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Name and Phone cannot be empty")),
+      );
+      return;
     }
+
+    setState(() => _isLoading = true);
+
+    try {
+      String base64Image = _image != null ? base64Encode(_image!.readAsBytesSync()) : "";
+
+      var resp = await http.post(
+        Uri.parse("${MyConfig.baseUrl}${MyConfig.backend}/update_profile.php"),
+        body: {
+          "user_id": widget.user.userId,
+          "name": nameCtrl.text,
+          "phone": phoneCtrl.text,
+          "image": base64Image,
+        },
+      );
+
+      if (resp.statusCode == 200) {
+        var data = jsonDecode(resp.body);
+        if (data['status'] == 'success') {
+          
+          // --- FIX START: UPDATE LOCAL USER DATA ---
+          setState(() {
+            // Update Name and Phone immediately in memory
+            widget.user.userName = nameCtrl.text;
+            widget.user.userPhone = phoneCtrl.text;
+            
+            // Update Image if the server sent a new filename
+            if (data['data'] != null && data['data']['filename'] != null) {
+               widget.user.profileImage = data['data']['filename'];
+               // Clear the local file selection so the UI uses the new NetworkImage
+               _image = null; 
+            }
+          });
+          // --- FIX END ---
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Profile Updated Successfully")),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Update Failed: ${data['message']}")),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Server Error: ${resp.statusCode}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("An error occurred: $e")),
+      );
+    }
+
+    setState(() => _isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("My Profile")),
-      body: Padding(
+      body: SingleChildScrollView( // Added scroll view to prevent overflow
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
@@ -76,17 +115,19 @@ class _ProfilePageState extends State<ProfilePage> {
                 radius: 60,
                 backgroundImage: _image != null
                     ? FileImage(_image!)
-                    : (widget.user.profileImage != null
+                    : (widget.user.profileImage != null && widget.user.profileImage!.isNotEmpty
                           ? NetworkImage(
                                   "${MyConfig.baseUrl}${MyConfig.backend}/uploads/profile/${widget.user.profileImage}",
                                 )
                                 as ImageProvider
                           : const AssetImage("assets/images/pawpal.png")),
-                child: _image == null && widget.user.profileImage == null
+                child: _image == null && (widget.user.profileImage == null || widget.user.profileImage!.isEmpty)
                     ? const Icon(Icons.camera_alt, size: 40, color: Colors.grey)
                     : null,
               ),
             ),
+            const SizedBox(height: 10),
+            const Text("Tap image to change", style: TextStyle(color: Colors.grey)),
             const SizedBox(height: 20),
             TextField(
               controller: nameCtrl,
@@ -99,6 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 15),
             TextField(
               controller: phoneCtrl,
+              keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
                 labelText: "Phone",
                 prefixIcon: Icon(Icons.phone),
@@ -116,12 +158,15 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: _updateProfile,
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _updateProfile,
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text("Save Changes"),
               ),
-              child: const Text("Save Changes"),
             ),
           ],
         ),
