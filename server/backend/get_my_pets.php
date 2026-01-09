@@ -42,7 +42,7 @@ if ($operation == 'delete') {
         exit();
     }
 
-    $stmt = $conn->prepare("SELECT pet_id, user_id, pet_name, pet_type, category, description, image_paths, lat, lng, created_at FROM tbl_pets WHERE user_id = ? ORDER BY created_at DESC");
+    $stmt = $conn->prepare("SELECT pet_id, user_id, pet_name, pet_age, pet_gender, pet_type, category, pet_health, description, image_paths, lat, lng, created_at FROM tbl_pets WHERE user_id = ? ORDER BY created_at DESC");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $res = $stmt->get_result();

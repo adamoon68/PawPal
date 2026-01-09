@@ -268,7 +268,6 @@ class _MyPetsPageState extends State<MyPetsPage> {
 
                         const SizedBox(height: 4),
 
-                        
                         Text(
                           (p.description ?? '').length > 60
                               ? '${p.description!.substring(0, 60)}...'
@@ -279,7 +278,6 @@ class _MyPetsPageState extends State<MyPetsPage> {
                           ),
                         ),
 
-                        
                         if (p.imagePaths != null && p.imagePaths!.length > 1)
                           Padding(
                             padding: const EdgeInsets.only(top: 4.0),
