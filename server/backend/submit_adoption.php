@@ -13,7 +13,7 @@ if (!isset($_POST['user_id']) || !isset($_POST['pet_id']) || !isset($_POST['moti
 
 $user_id = $_POST['user_id'];
 $pet_id = $_POST['pet_id'];
-$motivation = trim($_POST['motivation']); // Remove extra spaces
+$motivation = trim($_POST['motivation']); 
 
 // 2. Check if motivation is empty
 if (empty($motivation)) {

@@ -13,11 +13,11 @@ if (!isset($_POST['user_id']) || !isset($_POST['pet_name'])) {
 
 $user_id = $_POST['user_id'];
 $pet_name = $_POST['pet_name'];
-$pet_age = $_POST['pet_age'];       // NEW
-$pet_gender = $_POST['pet_gender']; // NEW
+$pet_age = $_POST['pet_age'];       
+$pet_gender = $_POST['pet_gender']; 
 $pet_type = $_POST['pet_type'];
 $category = $_POST['category'];
-$pet_health = $_POST['pet_health']; // NEW
+$pet_health = $_POST['pet_health']; 
 $description = $_POST['description'];
 $lat = $_POST['lat'];
 $lng = $_POST['lng'];

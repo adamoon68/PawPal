@@ -3,7 +3,7 @@ import 'dart:convert';
 class Pet {
   String? petId;
   String? userId;
-  String? ownerName; // <--- ADD THIS
+  String? ownerName; 
   String? petName;
   String? petAge;    
   String? petGender; 
@@ -74,7 +74,7 @@ class Pet {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['pet_id'] = petId;
     data['user_id'] = userId;
-    data['owner_name'] = ownerName; // <--- ADD THIS
+    data['owner_name'] = ownerName; 
     data['pet_name'] = petName;
     data['pet_age'] = petAge;
     data['pet_gender'] = petGender;

@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:pawpal/myconfig.dart';
 import 'package:pawpal/pet.dart';
 import 'package:pawpal/user.dart';
-import 'package:pawpal/mydonationspage.dart'; // Import MyDonationsPage
+import 'package:pawpal/mydonationspage.dart';
 
 class PetDetailsPage extends StatefulWidget {
   final User user;
@@ -52,7 +52,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
               }
 
               submitAdoption(text);
-              Navigator.pop(context); // Close dialog only on success
+              Navigator.pop(context);
             },
             child: const Text("Submit"),
           ),
@@ -131,18 +131,22 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                     // --- VALIDATION START ---
                     if (type == "Money") {
                       String amt = amountCtrl.text.trim();
-                      if (amt.isEmpty || double.tryParse(amt) == null || double.parse(amt) <= 0) {
+                      if (amt.isEmpty ||
+                          double.tryParse(amt) == null ||
+                          double.parse(amt) <= 0) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text("Please enter a valid amount greater than 0"),
+                            content: Text(
+                              "Please enter a valid amount greater than 0",
+                            ),
                             backgroundColor: Colors.red,
                           ),
                         );
-                        return; // Stop here
+                        return;
                       }
 
                       // Proceed to Payment Page
-                      Navigator.pop(context); 
+                      Navigator.pop(context);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -157,13 +161,15 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                       // Validate Description for Food/Medical
                       String desc = descCtrl.text.trim();
                       if (desc.isEmpty) {
-                         ScaffoldMessenger.of(context).showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text("Please describe what you are donating"),
+                            content: Text(
+                              "Please describe what you are donating",
+                            ),
                             backgroundColor: Colors.red,
                           ),
                         );
-                        return; 
+                        return;
                       }
 
                       // Submit Standard Donation
@@ -173,7 +179,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                     // --- VALIDATION END ---
                   },
                   child: const Text("Donate"),
-                )
+                ),
               ],
             );
           },

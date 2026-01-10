@@ -20,11 +20,7 @@ class SubmitPetPage extends StatefulWidget {
 
 class _SubmitPetPageState extends State<SubmitPetPage> {
   List<String> petTypes = ['Cat', 'Dog', 'Bird', 'Rabbit', 'Other'];
-  List<String> categories = [
-    'Adoption',
-    'Lost',
-    'Donation Request',
-  ];
+  List<String> categories = ['Adoption', 'Lost', 'Donation Request'];
   List<String> genders = ['Male', 'Female', 'Unknown'];
 
   TextEditingController petNameController = TextEditingController();
@@ -333,8 +329,9 @@ class _SubmitPetPageState extends State<SubmitPetPage> {
     if (kIsWeb) {
       for (var img in webImages) base64Images.add(base64Encode(img));
     } else {
-      for (var img in images)
+      for (var img in images) {
         base64Images.add(base64Encode(img.readAsBytesSync()));
+      }
     }
 
     await http

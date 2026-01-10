@@ -40,7 +40,8 @@ class _RegisterPageState extends State<RegisterPage> {
             );
           },
         ),
-        title: const Text("Register Page")),
+        title: const Text("Register Page"),
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -51,10 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Image.asset(
-                      "assets/images/pawpal.png",
-                      scale: 4.5,
-                    ),
+                    child: Image.asset("assets/images/pawpal.png", scale: 4.5),
                   ),
                   const SizedBox(height: 5),
 
@@ -142,9 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const LoginPage(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const LoginPage()),
                       );
                     },
                     child: const Text("Already have an account? Login here"),
@@ -176,16 +172,16 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     if (password != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Passwords do not match")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Passwords do not match")));
       return;
     }
 
     if (!RegExp(r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$').hasMatch(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Invalid email format")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Invalid email format")));
       return;
     }
 
@@ -212,7 +208,12 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   // REGISTER HTTP REQUEST
-  void registerUser(String name, String email, String password,  String phone) async {
+  void registerUser(
+    String name,
+    String email,
+    String password,
+    String phone,
+  ) async {
     setState(() => isLoading = true);
 
     // Show loading dialog
@@ -237,7 +238,7 @@ class _RegisterPageState extends State<RegisterPage> {
             "email": email,
             "name": name,
             "phone": phone,
-            "password": password
+            "password": password,
           },
         )
         .then((response) {
@@ -259,15 +260,16 @@ class _RegisterPageState extends State<RegisterPage> {
               );
             } else {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(res["message"])),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(res["message"])));
             }
           } else {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                  content: Text("Registration failed. Please try again.")),
+                content: Text("Registration failed. Please try again."),
+              ),
             );
           }
         })
@@ -276,8 +278,7 @@ class _RegisterPageState extends State<RegisterPage> {
           onTimeout: () {
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text("Request timed out. Try again.")),
+              const SnackBar(content: Text("Request timed out. Try again.")),
             );
           },
         );

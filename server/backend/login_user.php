@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $userdata = array();
         while ($row = $result->fetch_assoc()) {
-            unset($row['password']); // dont return password hash
+            unset($row['password']); 
             $userdata[] = $row;
         }
 

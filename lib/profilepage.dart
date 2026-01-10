@@ -18,7 +18,7 @@ class _ProfilePageState extends State<ProfilePage> {
   late TextEditingController nameCtrl;
   late TextEditingController phoneCtrl;
   File? _image;
-  bool _isLoading = false; // Added to show loading state
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -48,7 +48,9 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() => _isLoading = true);
 
     try {
-      String base64Image = _image != null ? base64Encode(_image!.readAsBytesSync()) : "";
+      String base64Image = _image != null
+          ? base64Encode(_image!.readAsBytesSync())
+          : "";
 
       var resp = await http.post(
         Uri.parse("${MyConfig.baseUrl}${MyConfig.backend}/update_profile.php"),
@@ -63,18 +65,15 @@ class _ProfilePageState extends State<ProfilePage> {
       if (resp.statusCode == 200) {
         var data = jsonDecode(resp.body);
         if (data['status'] == 'success') {
-          
           // --- FIX START: UPDATE LOCAL USER DATA ---
           setState(() {
-            // Update Name and Phone immediately in memory
             widget.user.userName = nameCtrl.text;
             widget.user.userPhone = phoneCtrl.text;
-            
-            // Update Image if the server sent a new filename
+
             if (data['data'] != null && data['data']['filename'] != null) {
-               widget.user.profileImage = data['data']['filename'];
-               // Clear the local file selection so the UI uses the new NetworkImage
-               _image = null; 
+              widget.user.profileImage = data['data']['filename'];
+
+              _image = null;
             }
           });
           // --- FIX END ---
@@ -93,9 +92,9 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("An error occurred: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("An error occurred: $e")));
     }
 
     setState(() => _isLoading = false);
@@ -105,7 +104,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("My Profile")),
-      body: SingleChildScrollView( // Added scroll view to prevent overflow
+      body: SingleChildScrollView(
+        // Added scroll view to prevent overflow
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
@@ -115,19 +115,26 @@ class _ProfilePageState extends State<ProfilePage> {
                 radius: 60,
                 backgroundImage: _image != null
                     ? FileImage(_image!)
-                    : (widget.user.profileImage != null && widget.user.profileImage!.isNotEmpty
+                    : (widget.user.profileImage != null &&
+                              widget.user.profileImage!.isNotEmpty
                           ? NetworkImage(
                                   "${MyConfig.baseUrl}${MyConfig.backend}/uploads/profile/${widget.user.profileImage}",
                                 )
                                 as ImageProvider
                           : const AssetImage("assets/images/pawpal.png")),
-                child: _image == null && (widget.user.profileImage == null || widget.user.profileImage!.isEmpty)
+                child:
+                    _image == null &&
+                        (widget.user.profileImage == null ||
+                            widget.user.profileImage!.isEmpty)
                     ? const Icon(Icons.camera_alt, size: 40, color: Colors.grey)
                     : null,
               ),
             ),
             const SizedBox(height: 10),
-            const Text("Tap image to change", style: TextStyle(color: Colors.grey)),
+            const Text(
+              "Tap image to change",
+              style: TextStyle(color: Colors.grey),
+            ),
             const SizedBox(height: 20),
             TextField(
               controller: nameCtrl,
