@@ -7,7 +7,7 @@ include 'config.php';
 $search = $_GET['search'] ?? '';
 $type = $_GET['type'] ?? 'All';
 
-// SQL Query
+// SQL Query: JOIN tbl_users to get the owner's name
 $sql = "SELECT p.*, u.name as owner_name 
         FROM tbl_pets p 
         LEFT JOIN tbl_users u ON p.user_id = u.user_id 

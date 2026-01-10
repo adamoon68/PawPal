@@ -33,7 +33,7 @@ if ($operation == 'delete') {
 
 } else {
 
-    // FETCH LOGIC 
+    // FETCH LOGIC (Default)
 
     $user_id = $_POST['user_id'] ?? '';
     
@@ -49,7 +49,7 @@ if ($operation == 'delete') {
 
     $data = [];
     while ($row = $res->fetch_assoc()) {
-        
+        // Decode the JSON string from DB into a PHP array
         $ips = [];
         if (!empty($row['image_paths'])) {
             $tmp = json_decode($row['image_paths'], true);

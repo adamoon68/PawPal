@@ -32,7 +32,7 @@ if ($stmt->execute()) {
             $newFilename = "profile_" . $user_id . "_" . time() . ".jpg";
             file_put_contents($uploadDir . $newFilename, $decodedImage);
             
-            // Update DB with new filename
+            
             $imgStmt = $conn->prepare("UPDATE tbl_users SET profile_image=? WHERE user_id=?");
             $imgStmt->bind_param("ss", $newFilename, $user_id);
             $imgStmt->execute();
