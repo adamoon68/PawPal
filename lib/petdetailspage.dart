@@ -18,13 +18,18 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
   // Adoption Logic
   void showAdoptDialog() {
     TextEditingController motivationCtrl = TextEditingController();
+
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("Request to Adopt"),
         content: TextField(
           controller: motivationCtrl,
-          decoration: const InputDecoration(labelText: "Motivation"),
+          decoration: const InputDecoration(
+            labelText: "Why do you want to adopt?",
+            hintText: "Tell us about your home and experience...",
+            border: OutlineInputBorder(),
+          ),
           maxLines: 3,
         ),
         actions: [
@@ -34,8 +39,20 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           ),
           ElevatedButton(
             onPressed: () {
-              submitAdoption(motivationCtrl.text);
-              Navigator.pop(context);
+              // VALIDATION CHECK
+              String text = motivationCtrl.text.trim();
+              if (text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Please fill in your reason for adoption."),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+
+              submitAdoption(text);
+              Navigator.pop(context); // Close dialog only on success
             },
             child: const Text("Submit"),
           ),
@@ -82,11 +99,14 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                         .toList(),
                     onChanged: (val) => setState(() => type = val!),
                   ),
+                  const SizedBox(height: 10),
                   if (type == "Money")
                     TextField(
                       controller: amountCtrl,
                       decoration: const InputDecoration(
                         labelText: "Amount (RM)",
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.attach_money),
                       ),
                       keyboardType: TextInputType.number,
                     ),
@@ -94,35 +114,66 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                     TextField(
                       controller: descCtrl,
                       decoration: const InputDecoration(
-                        labelText: "Description (Item)",
+                        labelText: "Description (e.g. 1 Bag of Cat Food)",
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.description),
                       ),
                     ),
                 ],
               ),
               actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancel"),
+                ),
                 ElevatedButton(
                   onPressed: () {
+                    // --- VALIDATION START ---
                     if (type == "Money") {
-                      // Navigate to MyDonationsPage for Payment
-                      if (amountCtrl.text.isNotEmpty) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => MyDonationsPage(
-                              user: widget.user,
-                              pet: widget.pet,
-                              amount: amountCtrl.text,
-                            ),
+                      String amt = amountCtrl.text.trim();
+                      if (amt.isEmpty || double.tryParse(amt) == null || double.parse(amt) <= 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Please enter a valid amount greater than 0"),
+                            backgroundColor: Colors.red,
                           ),
                         );
+                        return; // Stop here
                       }
+
+                      // Proceed to Payment Page
+                      Navigator.pop(context); 
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => MyDonationsPage(
+                            user: widget.user,
+                            pet: widget.pet,
+                            amount: amt,
+                          ),
+                        ),
+                      );
                     } else {
-                      submitDonation(type, "0", descCtrl.text);
+                      // Validate Description for Food/Medical
+                      String desc = descCtrl.text.trim();
+                      if (desc.isEmpty) {
+                         ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Please describe what you are donating"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return; 
+                      }
+
+                      // Submit Standard Donation
+                      submitDonation(type, "0", desc);
                       Navigator.pop(context);
                     }
+                    // --- VALIDATION END ---
                   },
                   child: const Text("Donate"),
-                ),
+                )
               ],
             );
           },

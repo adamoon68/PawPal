@@ -49,7 +49,7 @@ class HomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   const Text(
-                    "Ready to find a new paw friend?",
+                    "Find a new PawPal today 🐾",
                     style: TextStyle(fontSize: 16, color: Colors.black54),
                   ),
                 ],

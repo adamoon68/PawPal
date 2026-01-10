@@ -49,8 +49,8 @@ class _SubmitPetPageState extends State<SubmitPetPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Submit Pet'),
-        backgroundColor: Colors.blueGrey,
+        title: const Text('Register Pet'),
+        backgroundColor: Colors.brown,
         foregroundColor: Colors.white,
       ),
       body: Center(
