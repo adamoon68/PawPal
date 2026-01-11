@@ -31,6 +31,21 @@ Loads everything about submitted pets
 ### 5. submit_pet.php
 Handles submissions of the pets and images of the pets
 
+### 6. submit_adoption.php
+Handles submissions of the pets adoptions
+
+### 7. submit_donation.php
+Handles the payment for the donations
+
+### 8. update_profile.php
+Handles profile updating function
+
+### 9. get_all_pets.php
+Loads all of the pets submitted by all of the users
+
+### 10. get_my_donations.php
+Loads all of the donations that the current user has made
+
 ## Sample JSON Response
 ### Example of JSON Response for get_my_pets.php
 #### 1. Success Response 
